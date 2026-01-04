@@ -5,17 +5,17 @@
  * Entry point - Bootstraps the MCP server with dependency injection
  */
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+} from "@modelcontextprotocol/sdk/types.js";
 
 // Infrastructure
-import { FileTokenStorage } from './infrastructure/storage/file-token-storage.js';
-import { LinkedInOAuthService } from './infrastructure/linkedin/oauth.service.js';
-import { LinkedInApiClient } from './infrastructure/linkedin/api-client.js';
+import { FileTokenStorage } from "./infrastructure/storage/file-token-storage.js";
+import { LinkedInOAuthService } from "./infrastructure/linkedin/oauth.service.js";
+import { LinkedInApiClient } from "./infrastructure/linkedin/api-client.js";
 
 // Application
 import {
@@ -26,10 +26,10 @@ import {
   GetCompanyPageUseCase,
   CreateCompanyPostUseCase,
   GetCompanyPostsUseCase,
-} from './application/use-cases/linkedin.use-cases.js';
+} from "./application/use-cases/linkedin.use-cases.js";
 
 // Presentation
-import { LinkedInTools } from './presentation/tools/linkedin.tools.js';
+import { LinkedInTools } from "./presentation/tools/linkedin.tools.js";
 
 /**
  * Dependency Injection Container
@@ -65,7 +65,9 @@ class DependencyContainer {
     this.getMyPostsUseCase = new GetMyPostsUseCase(this.apiClient);
     this.deletePostUseCase = new DeletePostUseCase(this.apiClient);
     this.getCompanyPageUseCase = new GetCompanyPageUseCase(this.apiClient);
-    this.createCompanyPostUseCase = new CreateCompanyPostUseCase(this.apiClient);
+    this.createCompanyPostUseCase = new CreateCompanyPostUseCase(
+      this.apiClient
+    );
     this.getCompanyPostsUseCase = new GetCompanyPostsUseCase(this.apiClient);
 
     // Presentation
@@ -85,35 +87,19 @@ class DependencyContainer {
  * Main MCP Server
  */
 async function main() {
-  console.error('🚀 Starting LinkedIn MCP Server...');
+  //console.error('🚀 Starting LinkedIn MCP Server...');
 
   // Initialize dependencies
   const container = new DependencyContainer();
 
-  // Check authentication
-  const isAuthenticated = await container.oauthService.isAuthenticated();
-
-  if (!isAuthenticated) {
-    console.error('\n⚠️  Not authenticated with LinkedIn');
-    console.error('🔐 Starting OAuth authentication flow...\n');
-
-    try {
-      await container.oauthService.startAuthFlow();
-      console.error('\n✅ Authentication successful!\n');
-    } catch (error) {
-      console.error('\n❌ Authentication failed:', error);
-      console.error('\nPlease try again or check your LinkedIn app configuration.\n');
-      process.exit(1);
-    }
-  } else {
-    console.error('✅ Already authenticated with LinkedIn\n');
-  }
+  // Note: Authentication will be handled on-demand when tools are called
+  // This prevents the server from trying to start an OAuth server on startup
 
   // Create MCP server
   const server = new Server(
     {
-      name: 'linkedin-mcp-server',
-      version: '1.0.0',
+      name: "linkedin-mcp-server",
+      version: "1.0.0",
     },
     {
       capabilities: {
@@ -140,7 +126,7 @@ async function main() {
       return {
         content: [
           {
-            type: 'text',
+            type: "text",
             text: JSON.stringify(result, null, 2),
           },
         ],
@@ -149,7 +135,7 @@ async function main() {
       return {
         content: [
           {
-            type: 'text',
+            type: "text",
             text: `Error: ${error.message}`,
           },
         ],
@@ -162,16 +148,16 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error('✅ LinkedIn MCP Server is running\n');
-  console.error('Available tools:');
-  container.linkedInTools.getToolDefinitions().forEach((tool) => {
-    console.error(`  - ${tool.name}: ${tool.description}`);
+  //console.error('✅ LinkedIn MCP Server is running\n');
+  console.error("Available tools:");
+  container.linkedInTools.getToolDefinitions().forEach(() => {
+    //console.error(`  - ${tool.name}: ${tool.description}`);
   });
-  console.error('');
+  //console.error('');
 }
 
 // Run the server
-main().catch((error) => {
-  console.error('❌ Fatal error:', error);
+main().catch(() => {
+  //console.error('❌ Fatal error:', error);
   process.exit(1);
 });
