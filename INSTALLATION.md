@@ -1,101 +1,293 @@
-# 🚀 Guide d'Installation - LinkedIn MCP Server
+# 🚀 Complete Installation Guide - LinkedIn MCP Server
 
-## ✅ Prérequis vérifiés
-
-- ✅ Node.js 18+ installé
-- ✅ TypeScript installé
-- ✅ Application LinkedIn créée
-- ✅ Client ID: `78porn6kgy7zmm`
-- ✅ Redirect URI configurée: `http://localhost:3000/auth/callback`
+This guide provides detailed step-by-step instructions for installing and configuring the LinkedIn MCP Server.
 
 ---
 
-## 📋 Étapes d'installation
+## ✅ Prerequisites
 
-### 1️⃣ Installer les dépendances
+Before you begin, ensure you have:
 
-Ouvrez un terminal et exécutez :
+- ✅ **Node.js 18+** installed ([Download here](https://nodejs.org/))
+- ✅ **npm** or **yarn** package manager
+- ✅ **Claude Desktop** installed ([Download here](https://claude.ai/download))
+- ✅ **A LinkedIn account** (personal or business)
+- ✅ **Git** (for cloning the repository)
 
+Verify your Node.js version:
 ```bash
-cd ~/Documents/dev/linkedin-mcp-server
-npm install
+node -v
+# Should show v18.0.0 or higher
 ```
 
-### 2️⃣ Configurer les credentials LinkedIn
+---
 
-Le fichier `.env` a été créé. Vous devez maintenant :
+## 📋 Part 1: Create LinkedIn Application
 
-1. **Récupérer votre Client Secret** depuis le Developer Portal LinkedIn :
-   - Allez sur https://www.linkedin.com/developers/apps
-   - Cliquez sur votre app "Claude MCP Social Connector"
-   - Onglet "Auth"
-   - Cliquez sur l'icône 👁️ ou 📋 pour copier le Client Secret
+### Step 1: Access LinkedIn Developer Portal
 
-2. **Ouvrir le fichier `.env`** :
-   ```bash
-   open .env
-   ```
+1. Go to [LinkedIn Developer Portal](https://www.linkedin.com/developers/)
+2. Sign in with your LinkedIn account
+3. Click **"Create app"** or visit [Create App directly](https://www.linkedin.com/developers/apps/new)
 
-3. **Remplacer** `VOTRE_SECRET_ICI` par votre vrai Client Secret
+### Step 2: Fill in Application Details
 
-4. **(Optionnel) Récupérer votre Company ID** pour GD Dev Solutions :
-   - Méthode 1 : Depuis l'URL de votre page
-     - Allez sur https://www.linkedin.com/company/gd-dev-solutions
-     - L'ID est visible dans l'URL ou via les outils développeur
-   
-   - Méthode 2 : Via l'API (après première authentification)
-     - Le serveur pourra vous aider à le trouver
+Complete the application form:
 
-### 3️⃣ Compiler le projet TypeScript
+| Field | Value | Notes |
+|-------|-------|-------|
+| **App name** | Choose any name | Example: "My LinkedIn MCP Server" or "LinkedIn Claude Integration" |
+| **LinkedIn Page** | Select or create a page | Required by LinkedIn. You can create a page for yourself if you don't have one |
+| **Privacy policy URL** | Optional | Can be left empty for personal use |
+| **App logo** | Optional | Upload a logo if desired (can be added later) |
+| **Legal agreement** | Check the box | You must agree to LinkedIn's API Terms of Use |
+
+Click **"Create app"**.
+
+### Step 3: Configure Authentication Settings
+
+Once your app is created:
+
+1. Click on your newly created app
+2. Go to the **"Auth"** tab
+3. You'll see your credentials:
+   - **Client ID**: Copy this value (you'll need it later)
+   - **Client Secret**: Click the eye icon 👁️ to reveal it, then copy it
+
+4. Scroll down to **"OAuth 2.0 settings"**
+5. Under **"Redirect URLs"**, click **"Add redirect URL"**
+6. Add this exact URL: `http://localhost:3000/auth/callback`
+7. Click **"Update"**
+
+**Important**: The redirect URL must match exactly, including `http://` (not `https://`) and the port number.
+
+### Step 4: Request Access to Products
+
+LinkedIn uses "Products" to control API access. You need to request access to specific products:
+
+1. Go to the **"Products"** tab
+2. Find **"Sign In with LinkedIn using OpenID Connect"**
+   - Click **"Request access"**
+   - ✅ This is usually **approved instantly**
+3. Find **"Share on LinkedIn"**
+   - Click **"Request access"**
+   - ✅ This is also usually **approved instantly**
+
+These two products give you access to:
+- User profile information
+- Creating and managing posts
+- Basic LinkedIn functionality
+
+#### Optional: Request Advanced Products
+
+For advanced features (optional):
+
+- **"Advertising API"**: For detailed analytics (requires approval, 2-7 days)
+- **"Marketing Developer Platform"**: For advanced company page features (requires special approval)
+
+You don't need these to get started.
+
+### Step 5: Verify Your App Settings
+
+Before proceeding, double-check:
+- ✅ You have copied your Client ID
+- ✅ You have copied your Client Secret
+- ✅ Redirect URL is set to `http://localhost:3000/auth/callback`
+- ✅ "Sign In with LinkedIn" product is approved
+- ✅ "Share on LinkedIn" product is approved
+
+---
+
+## 📋 Part 2: Install the MCP Server
+
+### Step 1: Clone the Repository
 
 ```bash
+# Clone the repository
+git clone <your-repository-url>
+
+# Or if you downloaded a ZIP, extract it and navigate to the folder
+cd linkedin-mcp-server
+```
+
+### Step 2: Install Dependencies
+
+```bash
+# Using npm
+npm install
+
+# Or using yarn
+yarn install
+```
+
+This will install all required dependencies including:
+- `@modelcontextprotocol/sdk` - MCP protocol implementation
+- `axios` - HTTP client for LinkedIn API
+- `express` - OAuth callback server
+- TypeScript and build tools
+
+### Step 3: Create Environment Configuration
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+```
+
+Now edit the `.env` file:
+
+```bash
+# On macOS/Linux
+nano .env
+# or
+vim .env
+# or use your preferred text editor
+
+# On Windows
+notepad .env
+```
+
+Replace the placeholder values:
+
+```env
+# Replace these with your actual values from LinkedIn Developer Portal
+LINKEDIN_CLIENT_ID=your_actual_client_id_here
+LINKEDIN_CLIENT_SECRET=your_actual_client_secret_here
+
+# This should stay the same (must match LinkedIn app settings)
+LINKEDIN_REDIRECT_URI=http://localhost:3000/auth/callback
+
+# Leave empty for now (we'll add this later if needed)
+LINKEDIN_COMPANY_ID=
+
+# Server settings (can keep defaults)
+PORT=3000
+NODE_ENV=development
+TOKEN_STORAGE_PATH=./tokens.json
+```
+
+**Important**:
+- ✅ Replace `your_actual_client_id_here` with your real Client ID
+- ✅ Replace `your_actual_client_secret_here` with your real Client Secret
+- ⚠️ Never commit the `.env` file to git (it's already in `.gitignore`)
+
+### Step 4: Build the TypeScript Project
+
+```bash
+# Compile TypeScript to JavaScript
 npm run build
 ```
 
-Cette commande compile le TypeScript en JavaScript dans le dossier `dist/`.
+This creates the `dist/` folder with compiled JavaScript files.
 
-### 4️⃣ Première authentification OAuth
+Verify the build succeeded:
+```bash
+# Check that dist/index.js was created
+ls -la dist/index.js
+```
+
+---
+
+## 📋 Part 3: Authenticate with LinkedIn
+
+### Step 1: Start the OAuth Server
 
 ```bash
 npm start
 ```
 
-Le serveur va :
-1. Détecter que vous n'êtes pas encore authentifié
-2. Démarrer un serveur web local sur le port 3000
-3. Afficher une URL dans le terminal
-4. Ouvrir votre navigateur vers LinkedIn
-5. Vous demander d'autoriser l'application
-6. Sauvegarder les tokens dans `tokens.json`
+The server will:
+1. Check if you have valid tokens
+2. If not, start a local web server on port 3000
+3. Display an authorization URL in the terminal
+4. Automatically open your browser
 
-**Important** : Suivez les instructions dans le terminal !
+### Step 2: Authorize the Application
+
+In your browser:
+1. You'll be redirected to LinkedIn
+2. Review the permissions requested
+3. Click **"Allow"** to authorize the app
+4. You'll be redirected back to `localhost:3000/auth/callback`
+5. You should see a success message
+
+### Step 3: Verify Token Storage
+
+After successful authorization:
+
+```bash
+# Check that tokens were saved
+cat tokens.json
+```
+
+You should see a JSON file with:
+- `access_token`
+- `refresh_token`
+- `expires_in`
+- `scope`
+
+**Security Note**: `tokens.json` contains sensitive credentials. It's in `.gitignore` and should never be committed.
 
 ---
 
-## 🔧 Configuration de Claude Desktop
+## 📋 Part 4: Configure Claude Desktop
 
-### 1️⃣ Localiser le fichier de configuration
+### Step 1: Locate the Config File
 
-Sur macOS :
+The configuration file location depends on your operating system:
+
+**macOS**:
 ```bash
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
-### 2️⃣ Ouvrir et éditer le fichier
-
-```bash
-open ~/Library/Application\ Support/Claude/claude_desktop_config.json
+**Windows**:
+```
+%APPDATA%\Claude\claude_desktop_config.json
 ```
 
-Si le fichier n'existe pas, créez-le avec cette commande :
+**Linux**:
 ```bash
+~/.config/Claude/claude_desktop_config.json
+```
+
+### Step 2: Get Your Absolute Path
+
+You need the **absolute path** to your project directory.
+
+```bash
+# On macOS/Linux - run this in your project directory
+pwd
+
+# On Windows (PowerShell)
+Get-Location
+
+# On Windows (Command Prompt)
+cd
+```
+
+Copy the output. Example: `/Users/yourusername/projects/linkedin-mcp-server`
+
+### Step 3: Edit Claude Desktop Config
+
+Open the config file:
+
+```bash
+# macOS
+open ~/Library/Application\ Support/Claude/claude_desktop_config.json
+
+# Or use a text editor
+nano ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+
+If the file doesn't exist, create it:
+
+```bash
+# macOS/Linux
 mkdir -p ~/Library/Application\ Support/Claude
 echo '{"mcpServers":{}}' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
 
-### 3️⃣ Ajouter la configuration du serveur LinkedIn
-
-Ajoutez cette configuration dans le fichier JSON :
+Add or update the configuration:
 
 ```json
 {
@@ -103,109 +295,259 @@ Ajoutez cette configuration dans le fichier JSON :
     "linkedin": {
       "command": "node",
       "args": [
-        "/Users/gregorydernaucourt/Documents/dev/linkedin-mcp-server/dist/index.js"
+        "/ABSOLUTE/PATH/TO/linkedin-mcp-server/dist/index.js"
       ]
     }
   }
 }
 ```
 
-**Note** : Si vous avez déjà d'autres serveurs MCP, ajoutez simplement la section `"linkedin"` dans `mcpServers`.
+**Replace** `/ABSOLUTE/PATH/TO/linkedin-mcp-server` with your actual path from Step 2.
 
-### 4️⃣ Redémarrer Claude Desktop
+Example (macOS):
+```json
+{
+  "mcpServers": {
+    "linkedin": {
+      "command": "node",
+      "args": [
+        "/Users/john/projects/linkedin-mcp-server/dist/index.js"
+      ]
+    }
+  }
+}
+```
 
-1. Quittez complètement Claude Desktop (Cmd+Q)
-2. Relancez Claude Desktop
-3. Le serveur LinkedIn devrait se lancer automatiquement
+Example (Windows):
+```json
+{
+  "mcpServers": {
+    "linkedin": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\John\\projects\\linkedin-mcp-server\\dist\\index.js"
+      ]
+    }
+  }
+}
+```
+
+**Note**: If you already have other MCP servers configured, just add the `"linkedin"` entry inside `mcpServers`.
+
+### Step 4: Restart Claude Desktop
+
+1. **Completely quit** Claude Desktop (don't just close the window)
+   - macOS: Cmd+Q
+   - Windows: Right-click system tray icon → Quit
+   - Linux: Quit from menu
+2. **Relaunch** Claude Desktop
+3. Wait for it to fully start
 
 ---
 
-## ✅ Vérification
+## ✅ Part 5: Verify Installation
 
-Une fois Claude Desktop redémarré, vous pouvez tester en posant ces questions à Claude :
+### Test 1: Basic Profile Fetch
 
-- "Récupère mon profil LinkedIn"
-- "Publie un post sur LinkedIn : Bonjour, test depuis Claude !"
-- "Montre-moi mes derniers posts LinkedIn"
+In Claude Desktop, send this message:
+```
+Get my LinkedIn profile information
+```
 
-Si tout fonctionne, vous verrez les réponses de l'API LinkedIn ! 🎉
+**Expected result**: Claude should respond with your LinkedIn profile details (name, headline, etc.)
+
+### Test 2: Post Creation
+
+```
+Post on LinkedIn: Testing my new LinkedIn MCP server! #automation
+```
+
+**Expected result**: Claude should confirm the post was created. Check your LinkedIn feed to verify.
+
+### Test 3: Fetch Recent Posts
+
+```
+Show me my last 3 LinkedIn posts
+```
+
+**Expected result**: Claude should display your recent posts, including the one you just created.
 
 ---
 
-## 🔍 Récupérer le Company ID de GD Dev Solutions
+## 🏢 Part 6: Company Page Setup (Optional)
 
-### Méthode 1 : Via l'URL publique
+If you want to manage a company page, you need to get the Company ID.
 
-1. Allez sur https://www.linkedin.com/company/gd-dev-solutions
-2. Cliquez avec le bouton droit > Inspecter
-3. Cherchez dans le HTML l'attribut `data-entity-urn`
-4. Le format sera : `urn:li:organization:XXXXXX`
-5. Copiez les chiffres `XXXXXX` - c'est votre Company ID
+### Method 1: Using the Provided Script
 
-### Méthode 2 : Via l'API LinkedIn (après authentification)
-
-Demandez à Claude (une fois connecté) :
-```
-"Cherche mon entreprise GD Dev Solutions sur LinkedIn"
+```bash
+npm run get-company-id
 ```
 
-Claude pourra utiliser l'API pour récupérer l'ID.
+This script will:
+1. Authenticate with LinkedIn (using your existing tokens)
+2. Fetch all company pages you administrate
+3. Display the Company ID for each page
+4. Show you the exact line to add to `.env`
 
-### Méthode 3 : LinkedIn URL Inspector
+### Method 2: Manual Method
 
-1. Allez sur https://www.linkedin.com/company/gd-dev-solutions
-2. L'URL contient parfois directement l'ID numérique
+1. Go to your company page on LinkedIn
+2. Right-click → Inspect Element
+3. Search in the HTML for `data-entity-urn` or similar
+4. Find the numeric ID
 
-Une fois trouvé, ajoutez-le dans `.env` :
+### Add Company ID to .env
+
+Edit `.env` and add:
 ```env
-LINKEDIN_COMPANY_ID=12345678
+LINKEDIN_COMPANY_ID=123456789
+```
+
+Replace `123456789` with your actual Company ID.
+
+**Important**: You must be an **administrator** of the company page to post on its behalf.
+
+---
+
+## 🐛 Troubleshooting
+
+### Error: "Invalid environment variables"
+
+**Cause**: Missing or incorrect values in `.env`
+
+**Solution**:
+```bash
+# Verify .env file exists
+cat .env
+
+# Check that CLIENT_ID and CLIENT_SECRET are filled in
+# They should NOT be "your_client_id_here" or "your_client_secret_here"
+```
+
+### Error: "Authentication failed"
+
+**Cause**: Redirect URI mismatch or missing permissions
+
+**Solution**:
+1. Verify redirect URI in LinkedIn app matches exactly: `http://localhost:3000/auth/callback`
+2. Check that both Products are approved in LinkedIn Developer Portal
+3. Try deleting `tokens.json` and run `npm start` again
+
+### Error: "Cannot find module"
+
+**Cause**: Dependencies not installed or build failed
+
+**Solution**:
+```bash
+# Reinstall dependencies
+rm -rf node_modules package-lock.json
+npm install
+
+# Rebuild
+npm run build
+```
+
+### MCP Server Not Starting in Claude Desktop
+
+**Cause**: Incorrect path or permissions issue
+
+**Solution**:
+```bash
+# Verify the path is correct and absolute
+cat ~/Library/Application\ Support/Claude/claude_desktop_config.json
+
+# Check Claude Desktop logs
+tail -f ~/Library/Logs/Claude/mcp*.log
+
+# Verify dist/index.js exists
+ls -la dist/index.js
+
+# Test the server manually
+node dist/index.js
+```
+
+### Error: "Port 3000 already in use"
+
+**Cause**: Another application is using port 3000
+
+**Solution**:
+```bash
+# Option 1: Kill the process using port 3000
+# macOS/Linux:
+lsof -ti:3000 | xargs kill -9
+
+# Option 2: Change the port
+# Edit .env and change PORT=3000 to PORT=3001
+# Also update LINKEDIN_REDIRECT_URI and LinkedIn app settings
+```
+
+### Error: "Company not found"
+
+**Cause**: Not an administrator or incorrect Company ID
+
+**Solution**:
+1. Verify you're an administrator of the company page
+2. Run `npm run get-company-id` to get the correct ID
+3. Make sure the ID is numeric (not the company name)
+
+---
+
+## 🔄 Updating the Server
+
+To update to the latest version:
+
+```bash
+# Pull latest changes
+git pull
+
+# Reinstall dependencies (if package.json changed)
+npm install
+
+# Rebuild
+npm run build
+
+# Restart Claude Desktop
 ```
 
 ---
 
-## 🐛 Dépannage
+## 🛠️ Development Setup
 
-### Erreur : "Invalid environment variables"
+For development with auto-reload:
 
-Vérifiez que votre `.env` contient bien :
-- `LINKEDIN_CLIENT_ID`
-- `LINKEDIN_CLIENT_SECRET` (sans `VOTRE_SECRET_ICI`)
-- `LINKEDIN_REDIRECT_URI`
+```bash
+# Run in development mode
+npm run dev
+```
 
-### Erreur : "Authentication failed"
-
-1. Vérifiez que le Redirect URI dans LinkedIn Developer Portal correspond exactement
-2. Assurez-vous d'avoir demandé les bons scopes (Products > Request access)
-3. Essayez de supprimer `tokens.json` et réauthentifiez
-
-### Le serveur ne démarre pas dans Claude Desktop
-
-1. Vérifiez le chemin dans `claude_desktop_config.json`
-2. Assurez-vous que `npm run build` a fonctionné
-3. Vérifiez les logs de Claude Desktop :
-   ```bash
-   tail -f ~/Library/Logs/Claude/mcp*.log
-   ```
+This uses `tsx` to run TypeScript directly with watch mode.
 
 ---
 
-## 📚 Prochaines étapes
+## 📚 Next Steps
 
-Une fois installé, explorez les fonctionnalités :
-
-1. **Posts personnels** : Créer, lire, supprimer
-2. **Page entreprise** : Publier au nom de GD Dev Solutions
-3. **Analytics** : Récupérer les stats de vos posts
-4. **Jobs** : Rechercher des opportunités
-5. **Messages** : Gérer vos conversations (si scope activé)
+- ✅ Installation complete!
+- 📖 Read [PERMISSIONS.md](PERMISSIONS.md) to understand LinkedIn API permissions
+- 🧪 See [TESTING.md](TESTING.md) for a complete testing guide
+- 📚 Check [REFERENCE.md](REFERENCE.md) for quick command reference
+- 🏗️ Explore [ARCHITECTURE.md](ARCHITECTURE.md) if you want to contribute
 
 ---
 
-## 🆘 Besoin d'aide ?
+## 🆘 Still Need Help?
 
-Si vous rencontrez des problèmes :
-1. Vérifiez les logs du serveur
-2. Consultez la documentation LinkedIn API
-3. Vérifiez que tous les scopes sont approuvés
+If you're still having issues:
 
-Bon développement ! 🚀
+1. Check the [Troubleshooting](#-troubleshooting) section above
+2. Review the [TESTING.md](TESTING.md) debugging section
+3. Check Claude Desktop logs for error messages
+4. Verify all prerequisites are met
+
+---
+
+**Installation complete!** 🎉
+
+You can now manage your LinkedIn presence through Claude Desktop.
+
+**Created with ❤️ by the community**
