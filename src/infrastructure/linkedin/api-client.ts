@@ -226,7 +226,7 @@ export class LinkedInApiClient implements ILinkedInRepository {
     }
   }
 
-  async getCompanyAnalytics(companyId: string): Promise<PostAnalytics[]> {
+  async getCompanyAnalytics(_companyId: string): Promise<PostAnalytics[]> {
     // Note: Analytics API requires special permissions
     // This is a placeholder implementation
     console.warn('⚠️ Analytics API requires Marketing Developer Platform access');
@@ -235,30 +235,30 @@ export class LinkedInApiClient implements ILinkedInRepository {
 
   // ==================== Jobs ====================
 
-  async searchJobs(criteria: SearchJobsDTO): Promise<JobPosting[]> {
+  async searchJobs(_criteria: SearchJobsDTO): Promise<JobPosting[]> {
     // Note: Job search requires special API access
     // This is a placeholder - LinkedIn deprecated public job search API
     console.warn('⚠️ Job search API requires special partner access');
     return [];
   }
 
-  async getJobById(jobId: string): Promise<JobPosting> {
+  async getJobById(_jobId: string): Promise<JobPosting> {
     throw new Error('Job API requires special partner access');
   }
 
   // ==================== Messages ====================
 
-  async getConversations(limit: number = 10): Promise<LinkedInMessage[]> {
+  async getConversations(_limit: number = 10): Promise<LinkedInMessage[]> {
     // Note: Messaging API requires additional permissions
     console.warn('⚠️ Messaging API requires additional permissions');
     return [];
   }
 
-  async sendMessage(data: SendMessageDTO): Promise<LinkedInMessage> {
+  async sendMessage(_data: SendMessageDTO): Promise<LinkedInMessage> {
     throw new Error('Messaging API requires additional permissions');
   }
 
-  async getConversationMessages(conversationId: string): Promise<LinkedInMessage[]> {
+  async getConversationMessages(_conversationId: string): Promise<LinkedInMessage[]> {
     console.warn('⚠️ Messaging API requires additional permissions');
     return [];
   }
