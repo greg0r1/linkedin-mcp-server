@@ -9,7 +9,6 @@
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "prepare": "npm run build",
-    "setup": "chmod +x setup.sh && ./setup.sh",
     "get-company-id": "node get-company-id.js",
     "test": "npm run build && npm start",
     "auth": "node dist/oauth-server.js"

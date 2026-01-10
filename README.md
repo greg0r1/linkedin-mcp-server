@@ -4,25 +4,33 @@ A Model Context Protocol (MCP) server that enables Claude Desktop to interact wi
 
 ## 🎯 Features
 
-### Personal Profile
-- ✅ Fetch profile information
-- ✅ Create and publish posts
-- ✅ Read your posts
-- ✅ Delete posts
+### ✅ Fully Supported (Standard API Access)
 
-### Company Pages
-- ✅ Publish posts on behalf of your company page
-- ✅ Retrieve page analytics
-- ✅ Manage page content
-- ✅ Read post statistics
+**Personal Profile**
+- Fetch your profile information
+- Create and publish posts
+- Read your posts
+- Delete posts
 
-### Job Search
-- ✅ Search for job opportunities
-- ✅ Filter by location, company, etc.
+**Company Pages**
+- Publish posts on behalf of your company page
+- Read company page information
+- Get company posts
 
-### Messages (if scope enabled)
-- ✅ Read conversations
-- ✅ Send messages
+### ⚠️ Limited or Requires Special Access
+
+**Company Analytics**
+- ⚠️ Requires Marketing Developer Platform access
+- Not available with standard API permissions
+
+**Job Search**
+- ❌ LinkedIn deprecated the public job search API
+- Feature code exists but is not functional
+
+**Messaging**
+- ❌ Requires additional LinkedIn API permissions
+- Not available with standard API access
+- Feature code exists but is not functional
 
 ## 🚀 Quick Start
 
@@ -76,18 +84,23 @@ LINKEDIN_COMPANY_ID=your_company_id_here  # Optional, for company page features
 npm run build
 ```
 
-#### 5. Authenticate with LinkedIn
+#### 5. Authenticate with LinkedIn (one-time setup)
 
 ```bash
 npm start
 ```
 
-The server will:
-- Open your browser to LinkedIn authentication
-- Save your access tokens to `~/.linkedin-mcp-tokens.json` (in your home directory)
-- You only need to do this once
+This step is **only needed once** to obtain your LinkedIn OAuth token:
+- Starts a temporary HTTP server on port 3000
+- Opens your browser to LinkedIn authentication
+- Saves your access tokens to `~/.linkedin-mcp-tokens.json` (in your home directory)
+- The server will automatically close after authentication
+
+**Note**: After this initial authentication, you don't need to run `npm start` again. Claude Desktop will use the saved token automatically.
 
 ## 🔧 Claude Desktop Configuration
+
+After building and authenticating, configure Claude Desktop to use your MCP server:
 
 Add this configuration to your Claude Desktop config file:
 
@@ -121,6 +134,8 @@ Get-Location
 
 Then restart Claude Desktop completely (quit and reopen).
 
+**How it works**: Claude Desktop will automatically launch the MCP server (via `dist/index.js`) when needed. You don't need to run `npm start` - that was only for the initial OAuth authentication.
+
 ## 🎯 Usage
 
 Once configured, you can ask Claude Desktop:
@@ -142,14 +157,10 @@ Once configured, you can ask Claude Desktop:
 ```
 "Post on my company page: We're hiring a Senior Developer!"
 "Show posts from my company page"
-"What are the analytics for my company page?"
+"Get information about my company page"
 ```
 
-### Job Search
-```
-"Search for Software Engineer jobs in San Francisco"
-"Find remote Full Stack Developer positions"
-```
+**Note**: Job search and messaging features are not available with standard LinkedIn API access. See the Features section for details.
 
 ## 🏢 Getting Your Company ID (Optional)
 
@@ -204,18 +215,23 @@ src/
 ## 🛠️ Development
 
 ```bash
-# Development mode with auto-reload
-npm run dev
-
-# Build TypeScript
+# Build TypeScript (required before using with Claude Desktop)
 npm run build
 
-# Start the server
+# Development mode with auto-reload (for testing changes)
+npm run dev
+
+# Authenticate with LinkedIn (one-time setup only)
 npm start
 
-# Get your company ID
+# Get your company ID (for posting on company pages)
 npm run get-company-id
 ```
+
+**Important**:
+- `npm run build` is required before using the MCP server with Claude Desktop
+- `npm start` is only needed once for OAuth authentication
+- After authentication, Claude Desktop launches the server automatically via the config file
 
 ## 📚 Resources
 
