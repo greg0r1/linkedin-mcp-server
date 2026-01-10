@@ -19,7 +19,7 @@ export class FileTokenStorage implements TokenStorage {
     try {
       const data = JSON.stringify(token, null, 2);
       await fs.writeFile(this.filePath, data, 'utf-8');
-      console.log('✅ Token saved successfully');
+      console.error('✅ Token saved successfully');
     } catch (error) {
       console.error('❌ Failed to save token:', error);
       throw new Error('Token storage error');
@@ -43,7 +43,7 @@ export class FileTokenStorage implements TokenStorage {
   async delete(): Promise<void> {
     try {
       await fs.unlink(this.filePath);
-      console.log('✅ Token deleted successfully');
+      console.error('✅ Token deleted successfully');
     } catch (error: any) {
       if (error.code === 'ENOENT') {
         return; // File doesn't exist, nothing to delete

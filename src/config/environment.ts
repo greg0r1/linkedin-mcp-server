@@ -1,8 +1,9 @@
 import { config } from "dotenv";
 import { z } from "zod";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { dirname, join } from "path";
 import { resolve } from "path";
+import { homedir } from "os";
 
 // Get the directory of the current file
 const __filename = fileURLToPath(import.meta.url);
@@ -29,7 +30,7 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
-  TOKEN_STORAGE_PATH: z.string().default("./tokens.json"),
+  TOKEN_STORAGE_PATH: z.string().default(join(homedir(), ".linkedin-mcp-tokens.json")),
 });
 
 type Environment = z.infer<typeof envSchema>;

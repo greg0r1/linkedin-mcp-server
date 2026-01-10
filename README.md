@@ -84,7 +84,7 @@ npm start
 
 The server will:
 - Open your browser to LinkedIn authentication
-- Save your access tokens to `tokens.json`
+- Save your access tokens to `~/.linkedin-mcp-tokens.json` (in your home directory)
 - You only need to do this once
 
 ## 🔧 Claude Desktop Configuration
@@ -196,9 +196,10 @@ src/
 ## 🔐 Security
 
 - ⚠️ **NEVER commit** your `.env` file
-- ⚠️ OAuth tokens are stored locally in `tokens.json`
-- ⚠️ Keep `.env` and `tokens.json` in `.gitignore`
+- ⚠️ OAuth tokens are stored locally in `~/.linkedin-mcp-tokens.json` (in your home directory)
+- ⚠️ Keep `.env` in `.gitignore`
 - ⚠️ Tokens are automatically refreshed when needed
+- ⚠️ You can customize the token storage path with the `TOKEN_STORAGE_PATH` environment variable
 
 ## 🛠️ Development
 
@@ -231,7 +232,7 @@ Check that your `.env` file contains valid values (not placeholders like `your_c
 ### "Authentication failed"
 1. Verify your Redirect URI matches exactly: `http://localhost:3000/auth/callback`
 2. Check that you've requested access to required Products in LinkedIn Developer Portal
-3. Delete `tokens.json` and try authenticating again
+3. Delete `~/.linkedin-mcp-tokens.json` and try authenticating again
 
 ### MCP server not starting in Claude Desktop
 1. Verify the path in `claude_desktop_config.json` is absolute and correct
@@ -242,6 +243,20 @@ Check that your `.env` file contains valid values (not placeholders like `your_c
 
 ### "Company not found"
 Make sure you're an administrator of the company page on LinkedIn
+
+### "Failed to retrieve LinkedIn posts" or rate limit errors
+LinkedIn API has strict rate limits and restrictions:
+- Personal posts (`get_my_posts`): May be limited or require additional permissions
+- Company posts (`get_company_posts`): May require Marketing Developer Platform access
+- Try reducing the number of posts requested (use a smaller limit)
+- Check your LinkedIn app's permissions and products in the Developer Portal
+- Some endpoints may not be available with standard API access
+
+### MCP protocol errors or "broken pipe"
+If you see errors in Claude Desktop logs about the MCP protocol:
+- This has been fixed in recent versions - ensure you have the latest code
+- All logging now goes to stderr (not stdout) to avoid interfering with the MCP protocol
+- Restart Claude Desktop after updating
 
 ## 📝 License
 

@@ -120,6 +120,7 @@ export class LinkedInApiClient implements ILinkedInRepository {
       return response.data.elements?.map((post: any) => this.mapToLinkedInPost(post)) || [];
     } catch (error: any) {
       console.error('❌ Failed to get posts:', error.response?.data || error.message);
+      console.error('⚠️ Note: LinkedIn API has rate limits and may restrict access to posts. Consider using a lower limit or checking your API permissions.');
       throw new Error('Failed to retrieve LinkedIn posts');
     }
   }
@@ -222,6 +223,7 @@ export class LinkedInApiClient implements ILinkedInRepository {
       );
     } catch (error: any) {
       console.error('❌ Failed to get company posts:', error.response?.data || error.message);
+      console.error('⚠️ Note: LinkedIn API has rate limits and may restrict access to company posts. You may need additional permissions or Marketing Developer Platform access.');
       throw new Error('Failed to retrieve company posts');
     }
   }
@@ -229,7 +231,7 @@ export class LinkedInApiClient implements ILinkedInRepository {
   async getCompanyAnalytics(_companyId: string): Promise<PostAnalytics[]> {
     // Note: Analytics API requires special permissions
     // This is a placeholder implementation
-    console.warn('⚠️ Analytics API requires Marketing Developer Platform access');
+    console.error('⚠️ Analytics API requires Marketing Developer Platform access');
     return [];
   }
 
@@ -238,7 +240,7 @@ export class LinkedInApiClient implements ILinkedInRepository {
   async searchJobs(_criteria: SearchJobsDTO): Promise<JobPosting[]> {
     // Note: Job search requires special API access
     // This is a placeholder - LinkedIn deprecated public job search API
-    console.warn('⚠️ Job search API requires special partner access');
+    console.error('⚠️ Job search API requires special partner access');
     return [];
   }
 
@@ -250,7 +252,7 @@ export class LinkedInApiClient implements ILinkedInRepository {
 
   async getConversations(_limit: number = 10): Promise<LinkedInMessage[]> {
     // Note: Messaging API requires additional permissions
-    console.warn('⚠️ Messaging API requires additional permissions');
+    console.error('⚠️ Messaging API requires additional permissions');
     return [];
   }
 
@@ -259,7 +261,7 @@ export class LinkedInApiClient implements ILinkedInRepository {
   }
 
   async getConversationMessages(_conversationId: string): Promise<LinkedInMessage[]> {
-    console.warn('⚠️ Messaging API requires additional permissions');
+    console.error('⚠️ Messaging API requires additional permissions');
     return [];
   }
 

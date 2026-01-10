@@ -115,7 +115,7 @@ export class LinkedInOAuthService implements IOAuthService {
     const isValid = await this.tokenStorage.isValid();
 
     if (!isValid && token.refreshToken) {
-      console.log('🔄 Token expired, refreshing...');
+      console.error('🔄 Token expired, refreshing...');
       const newToken = await this.refreshToken(token.refreshToken);
       return newToken.accessToken;
     }
@@ -171,10 +171,10 @@ export class LinkedInOAuthService implements IOAuthService {
 
       const server = app.listen(port, () => {
         const authUrl = this.getAuthorizationUrl();
-        console.log(`\n🔐 OAuth Server started on port ${port}`);
-        console.log(`\n📱 Please open this URL in your browser to authenticate:\n`);
-        console.log(`${authUrl}\n`);
-        console.log('Waiting for authentication...\n');
+        console.error(`\n🔐 OAuth Server started on port ${port}`);
+        console.error(`\n📱 Please open this URL in your browser to authenticate:\n`);
+        console.error(`${authUrl}\n`);
+        console.error('Waiting for authentication...\n');
       });
 
       // Timeout after 5 minutes
